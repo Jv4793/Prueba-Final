@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PlayStation Zone es una WebApp PWA sobre consolas PlayStation, videojuegos destacados, favoritos y clima para jugar.">
+  <meta name="theme-color" content="#0a5cff">
+  <title>PlayStation Zone</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/styles.css">
+  <script src="./js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
+  <header class="site-header">
+    <nav class="navbar" aria-label="Navegación principal">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio de PlayStation Zone">
+        <span class="brand-mark" aria-hidden="true">PSZ</span>
+        <span>PlayStation Zone</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu-principal">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+
+      <ul class="nav-links" id="menu-principal">
+        <li><a href="#consolas">Consolas</a></li>
+        <li><a href="#videojuegos">Videojuegos</a></li>
+        <li><a href="#favoritos">Favoritos</a></li>
+        <li><a href="#clima">Clima</a></li>
+        <li><a href="#pwa">PWA</a></li>
+      </ul>
+
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false">
+        <span class="theme-toggle__icon" aria-hidden="true">◐</span>
+        <span class="theme-toggle__text">Modo oscuro</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="contenido">
+    <section class="hero section" id="inicio" aria-labelledby="titulo-principal">
+      <div class="hero__content">
+        <p class="section-kicker">Tu guía PlayStation para descubrir y guardar juegos</p>
+        <h1 id="titulo-principal">PlayStation Zone</h1>
+        <p class="hero__text">
+          Explora consolas, descubre videojuegos destacados, guarda favoritos y consulta si el clima acompaña una sesión de juego en Gijón.
+        </p>
+        <div class="hero__actions" aria-label="Acciones principales">
+          <a class="button button--primary" href="#videojuegos">Ver videojuegos</a>
+          <a class="button button--secondary" href="#clima">Consultar clima</a>
+        </div>
+      </div>
+
+      <article class="hero-panel" aria-label="Resumen de funciones de la aplicación">
+        <div class="hero-panel__screen">
+          <div class="screen-line screen-line--wide"></div>
+          <div class="screen-grid" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p>Favoritos guardados localmente, búsqueda instantánea y experiencia offline tras la primera carga.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="section" id="consolas" aria-labelledby="consolas-titulo">
+      <div class="section-heading">
+        <p class="section-kicker">Hardware</p>
+        <h2 id="consolas-titulo">Consolas PlayStation</h2>
+        <p>Un recorrido visual por las generaciones principales de la familia PlayStation.</p>
+      </div>
+      <div class="card-grid" id="consolas-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="section section--accent" id="videojuegos" aria-labelledby="videojuegos-titulo">
+      <div class="section-heading section-heading--split">
+        <div>
+          <p class="section-kicker">Catálogo</p>
+          <h2 id="videojuegos-titulo">Videojuegos destacados</h2>
+          <p>Filtra por título, consola o género y marca tus juegos favoritos.</p>
+        </div>
+        <form class="search-form" role="search" aria-label="Buscar videojuegos">
+          <label for="buscador">Buscar videojuegos</label>
+          <input id="buscador" name="buscador" type="search" placeholder="Buscar por título, consola o género" autocomplete="off">
+        </form>
+      </div>
+      <p class="status-message" id="resultado-busqueda" aria-live="polite"></p>
+      <div class="card-grid card-grid--games" id="videojuegos-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="section" id="favoritos" aria-labelledby="favoritos-titulo">
+      <div class="section-heading">
+        <p class="section-kicker">Tu selección</p>
+        <h2 id="favoritos-titulo">Favoritos</h2>
+        <p>Los favoritos se guardan en este navegador mediante LocalStorage.</p>
+      </div>
+      <div class="favorites-board" id="favoritos-lista" aria-live="polite"></div>
+    </section>
+
+    <section class="section weather-section" id="clima" aria-labelledby="clima-titulo">
+      <div class="section-heading">
+        <p class="section-kicker">Gijón, Asturias</p>
+        <h2 id="clima-titulo">Clima para jugar</h2>
+        <p>Datos actuales obtenidos con la API pública Open-Meteo, sin clave.</p>
+      </div>
+
+      <article class="weather-card" aria-labelledby="clima-card-titulo">
+        <div>
+          <h3 id="clima-card-titulo">Estado actual</h3>
+          <p class="weather-card__location">Latitud 43.5322 · Longitud -5.6611</p>
+        </div>
+        <div class="weather-card__content" id="clima-contenido" aria-live="polite">
+          <p class="loading-message">Cargando clima para preparar la partida...</p>
+        </div>
+        <button class="button button--secondary" id="actualizar-clima" type="button">Actualizar clima</button>
+      </article>
+    </section>
+
+    <section class="section pwa-section" id="pwa" aria-labelledby="pwa-titulo">
+      <div class="section-heading">
+        <p class="section-kicker">Instalable y offline</p>
+        <h2 id="pwa-titulo">Preparada como PWA</h2>
+        <p>La aplicación incluye manifest, iconos, Service Worker y cache local de archivos principales.</p>
+      </div>
+
+      <div class="feature-list" aria-label="Características PWA implementadas">
+        <article class="feature-item">
+          <h3>Instalable</h3>
+          <p>El manifest define nombre, colores, iconos y modo standalone.</p>
+        </article>
+        <article class="feature-item">
+          <h3>Offline básico</h3>
+          <p>El Service Worker cachea HTML, CSS, JS, manifest e iconos tras la primera visita.</p>
+        </article>
+        <article class="feature-item">
+          <h3>Persistencia local</h3>
+          <p>Favoritos y tema visual se conservan con LocalStorage.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>PlayStation Zone · Explora, guarda y juega a tu manera.</p>
+    <p>Autor: Jorge Hernández.</p>
+  </footer>
+</body>
+</html>
