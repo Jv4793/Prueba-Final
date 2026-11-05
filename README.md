@@ -1,5 +1,8 @@
 # PlayStation Zone
 
+La [validación actual](VALIDACION-20261105.md) documenta las pruebas de PWA,
+persistencia y uso con almacenamiento denegado, junto con los pendientes reales.
+
 ## 1. Descripción del proyecto
 
 PlayStation Zone es una WebApp progresiva sobre consolas PlayStation, videojuegos destacados, favoritos del usuario y clima para jugar. Está diseñada con una estética gaming moderna, limpia y responsive.

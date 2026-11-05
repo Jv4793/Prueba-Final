@@ -260,12 +260,35 @@ function toggleFavorito(idVideojuego) {
 }
 
 function guardarFavoritos() {
-  localStorage.setItem(FAVORITOS_STORAGE_KEY, JSON.stringify(favoritos));
+  guardarPreferencia(FAVORITOS_STORAGE_KEY, JSON.stringify(favoritos));
+}
+
+function avisarAlmacenamiento() {
+  const aviso = document.querySelector("#estado-almacenamiento");
+  aviso.hidden = false;
+  aviso.textContent = "No se ha podido acceder al almacenamiento del navegador. Puedes seguir usando la web, pero los favoritos y el tema podrían perderse al cerrar esta pestaña.";
+}
+
+function leerPreferencia(clave) {
+  try {
+    return localStorage.getItem(clave);
+  } catch {
+    avisarAlmacenamiento();
+    return null;
+  }
+}
+
+function guardarPreferencia(clave, valor) {
+  try {
+    localStorage.setItem(clave, valor);
+  } catch {
+    avisarAlmacenamiento();
+  }
 }
 
 function cargarFavoritos() {
   try {
-    const favoritosGuardados = JSON.parse(localStorage.getItem(FAVORITOS_STORAGE_KEY)) || [];
+    const favoritosGuardados = JSON.parse(leerPreferencia(FAVORITOS_STORAGE_KEY)) || [];
     console.log("Favoritos cargados desde LocalStorage:", favoritosGuardados);
     return Array.isArray(favoritosGuardados) ? favoritosGuardados : [];
   } catch (error) {
@@ -275,7 +298,7 @@ function cargarFavoritos() {
 }
 
 function obtenerTemaPreferido() {
-  const temaGuardado = localStorage.getItem(TEMA_STORAGE_KEY);
+  const temaGuardado = leerPreferencia(TEMA_STORAGE_KEY);
   if (temaGuardado === "dark" || temaGuardado === "light") {
     return temaGuardado;
   }
@@ -290,7 +313,7 @@ function aplicarModoOscuro(tema = obtenerTemaPreferido()) {
   elementos.themeToggle.setAttribute("aria-label", esOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro");
   elementos.themeToggle.querySelector(".theme-toggle__text").textContent = esOscuro ? "Modo claro" : "Modo oscuro";
   elementos.themeToggle.querySelector(".theme-toggle__icon").textContent = esOscuro ? "☀" : "◐";
-  localStorage.setItem(TEMA_STORAGE_KEY, tema);
+  guardarPreferencia(TEMA_STORAGE_KEY, tema);
   console.log("Modo visual aplicado:", tema);
 }
 

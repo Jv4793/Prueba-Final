@@ -774,3 +774,9 @@ h3 {
     animation-iteration-count: 1 !important;
   }
 }
+/* Persistence failures keep the catalog usable and explain the local limit. */
+.storage-notice {
+  margin: 1rem auto;
+  padding: 1rem;
+  max-width: 72rem;
+}
