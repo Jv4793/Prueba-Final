@@ -336,10 +336,16 @@ function crearMensajeClima(temperatura, viento, weatherCode, esDia) {
 
 async function obtenerClima() {
   const url = "https://api.open-meteo.com/v1/forecast?latitude=43.5322&longitude=-5.6611&current=temperature_2m,wind_speed_10m,weather_code,is_day&timezone=Europe%2FMadrid";
+  const solicitud = (obtenerClima.solicitud || 0) + 1;
+  obtenerClima.solicitud = solicitud;
+  obtenerClima.control?.abort();
+  const control = new AbortController();
+  obtenerClima.control = control;
+  const limite = setTimeout(() => control.abort(), 8000);
   elementos.climaContenido.innerHTML = '<p class="loading-message">Cargando clima para preparar la partida...</p>';
 
   try {
-    const respuesta = await fetch(url);
+    const respuesta = await fetch(url, { signal: control.signal });
     if (!respuesta.ok) {
       throw new Error(`Respuesta HTTP ${respuesta.status}`);
     }
@@ -349,7 +355,12 @@ async function obtenerClima() {
     const temperatura = Number(actual.temperature_2m);
     const viento = Number(actual.wind_speed_10m);
     const codigo = Number(actual.weather_code);
-    const esDia = Boolean(actual.is_day);
+    const dia = Number(actual.is_day);
+    if (![temperatura, viento, codigo, dia].every(Number.isFinite) || ![0, 1].includes(dia)) {
+      throw new Error("La respuesta meteorológica no contiene datos válidos.");
+    }
+    if (solicitud !== obtenerClima.solicitud) return;
+    const esDia = dia === 1;
     const mensaje = crearMensajeClima(temperatura, viento, codigo, esDia);
 
     elementos.climaContenido.innerHTML = `
@@ -366,10 +377,16 @@ async function obtenerClima() {
 
     console.log("Datos recibidos de Open-Meteo:", datos);
   } catch (error) {
+    if (solicitud !== obtenerClima.solicitud) return;
     elementos.climaContenido.innerHTML = `
       <p class="error-message">No se pudo obtener el clima ahora mismo. La aplicación sigue funcionando y puedes intentarlo más tarde.</p>
+      <button class="button button--secondary" id="reintentar-clima" type="button">Reintentar clima</button>
     `;
+    document.querySelector("#reintentar-clima").addEventListener("click", obtenerClima);
     console.warn("No se pudo obtener el clima. Se muestra mensaje amigable:", error);
+  } finally {
+    clearTimeout(limite);
+    if (obtenerClima.control === control) obtenerClima.control = null;
   }
 }
 

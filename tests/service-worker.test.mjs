@@ -79,7 +79,7 @@ function harness({ network = async () => new Response('network'), readError = fa
 
 test('activation preserves caches owned by another app and another scope', async () => {
   const h = harness();
-  for (const name of ['other-app-v1', 'playstation-zone-v3', `${prefix}old`, `${prefix}v4`, `${prefix}v5`, 'playstation-zone:other-scope:v4']) h.cache(name);
+  for (const name of ['other-app-v1', 'playstation-zone-v3', `${prefix}old`, `${prefix}v4`, `${prefix}v5`, h.current, 'playstation-zone:other-scope:v4']) h.cache(name);
   await h.dispatch('activate');
   assert.ok(h.stores.has('other-app-v1'));
   assert.ok(h.stores.has('playstation-zone-v3'), 'unscoped legacy ownership is ambiguous');
