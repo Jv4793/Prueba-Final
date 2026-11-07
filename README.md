@@ -1,7 +1,8 @@
 # PlayStation Zone
 
-La [validación actual](VALIDACION-20261105.md) documenta las pruebas de PWA,
-persistencia y uso con almacenamiento denegado, junto con los pendientes reales.
+La [validación actual](VALIDACION-20261107.md) documenta las pruebas de PWA,
+persistencia, almacenamiento denegado y recuperación meteorológica, junto con
+los pendientes reales.
 
 ## 1. Descripción del proyecto
 

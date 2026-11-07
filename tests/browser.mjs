@@ -41,16 +41,21 @@ try {
       ...['/', '/Prueba-Final/'].flatMap(route => [1440, 390].map(width => ({ route, width }))),
       { route: '/', width: 390, storage: 'get' },
       { route: '/Prueba-Final/', width: 390, storage: 'set' },
+      { route: '/', width: 390, weatherRecovery: true },
     ];
-  for (const { route, width, storage } of cases) {
+  for (const { route, width, storage, weatherRecovery } of cases) {
     updating = false;
     const context = await browser.newContext({ viewport: { width, height: 900 } });
     let offline = false;
+    let weatherRequests = 0;
     // Explicit weather double: no external account, location lookup or provider claim.
-    await context.route('https://api.open-meteo.com/**', route => offline
-      ? route.abort('internetdisconnected')
-      : route.fulfill({ json: { current: { temperature_2m: 20, wind_speed_10m: 5,
-        weather_code: 0, is_day: 1 } } }));
+    await context.route('https://api.open-meteo.com/**', route => {
+      weatherRequests++;
+      if (offline) return route.abort('internetdisconnected');
+      if (weatherRecovery && weatherRequests === 1) return route.fulfill({ status: 503, body: 'temporary failure' });
+      return route.fulfill({ json: { current: { temperature_2m: 20, wind_speed_10m: 5,
+        weather_code: 0, is_day: 1 } } });
+    });
     if (storage) await context.addInitScript(mode => {
       const denied = () => { throw new DOMException('Synthetic storage denial', 'SecurityError'); };
       if (mode === 'get') Object.defineProperty(window, 'localStorage', { get: denied });
@@ -63,6 +68,11 @@ try {
       const url = origin + route;
       await page.goto(url);
       assert.deepEqual(errors, [], 'Application must initialize when storage is denied');
+      if (weatherRecovery) {
+        await page.getByRole('button', { name: 'Reintentar clima' }).click();
+        await page.waitForFunction(() => document.querySelector('#clima-contenido').textContent.includes('20.0°C'));
+        assert.equal(weatherRequests, 2);
+      }
       await page.locator('#videojuegos-grid .favorite-button').first().waitFor();
       assert.ok(await page.locator('#consolas-grid article').count());
       const game = page.locator('#videojuegos-grid .favorite-button').first();
@@ -107,7 +117,7 @@ try {
       }
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
       assert.deepEqual(errors, []);
-      console.log(`PASS ${route} ${width}px ${storage ? `storage ${storage} denied` : 'persistence, SW update, offline, cache isolation'}`);
+      console.log(`PASS ${route} ${width}px ${storage ? `storage ${storage} denied` : weatherRecovery ? 'weather failure and retry' : 'persistence, SW update, offline, cache isolation'}`);
     } finally { await context.close(); }
   }
 } finally {
